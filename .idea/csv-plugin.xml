@@ -10,6 +10,20 @@
             </Attribute>
           </value>
         </entry>
+        <entry key="\ASL-sentences.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="|" />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="\asl 157 videos\ASL_sentences.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="|" />
+            </Attribute>
+          </value>
+        </entry>
       </map>
     </option>
   </component>

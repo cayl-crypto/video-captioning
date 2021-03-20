@@ -1,0 +1,2 @@
+/Users/pc/Desktop/caffe-recurrent/examples/s2vt/asl/Videos/1.mp4
+/Users/pc/Desktop/caffe-recurrent/examples/s2vt/asl/Videos/2.mp4
