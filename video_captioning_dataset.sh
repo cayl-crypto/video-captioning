@@ -1,8 +1,8 @@
 #!/usr/bin/env sh
-# This script downloads the dataset MSVD.
-# Skip this if you already have the the dataset MSVD.
+# This script downloads the dataset MVDD.
+# Skip this if you already have the the dataset MVDD.
 
-echo "Downloading video captioning dataset MSVD - Youtube Clips [~1.7GB] ..."
+echo "Downloading video captioning dataset MVDD - Youtube Clips [~1.7GB] ..."
 
 DIR="./"
 
