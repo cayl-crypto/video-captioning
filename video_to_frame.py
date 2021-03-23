@@ -11,7 +11,6 @@ def video_to_frame(file_paths):
     for i in range(len(file_paths)):
         cap = cv2.VideoCapture('%s' %(file_paths[i]))
 
-
         current_frame = 1
 
         while (True):
