@@ -2,6 +2,8 @@ import cv2
 import numpy as np
 import os
 
+## ADD Frames folder to file path before running code.
+
 def video_to_frame(file_paths):
 
     path_to_save = 'C:\\Users\\pc\\PycharmProjects\\video-captioning\\Frames'
