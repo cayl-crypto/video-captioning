@@ -31,6 +31,20 @@
             </Attribute>
           </value>
         </entry>
+        <entry key="\download_dataset.py">
+          <value>
+            <Attribute>
+              <option name="separator" value=":" />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="\main.py">
+          <value>
+            <Attribute>
+              <option name="separator" value=":" />
+            </Attribute>
+          </value>
+        </entry>
         <entry key="\video_to_frame.py">
           <value>
             <Attribute>

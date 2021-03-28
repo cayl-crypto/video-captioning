@@ -7,32 +7,31 @@ import json
 from PIL import Image
 import matplotlib.pyplot as plt
 import tarfile
+from utils import *
 
-def download_dataset(thetarfile,target_path):
-    print("Downloading...")
+def Download_Dataset():
+    thetarfile = "https://www.cs.utexas.edu/users/ml/clamp/videoDescription/YouTubeClips.tar"
+    target_path = "C:\\Users\\pc\\PycharmProjects\\video-captioning\\YouTubeClips.tar"
+    # download_dataset(thetarfile,target_path)
 
-    ftpstream = requests.get(thetarfile,stream=True)
-    total_size_in_bytes = int(ftpstream.headers.get('content-length', 0))
-    block_size = 1024  # 1 Kibibyte
-    progress_bar = tqdm(total=total_size_in_bytes, unit='iB', unit_scale=True)
-    with open(target_path, 'wb') as f:
-        for data in ftpstream.iter_content(block_size):
-            progress_bar.update(len(data))
-            f.write(data)
-    progress_bar.close()
-    if total_size_in_bytes != 0 and progress_bar.n != total_size_in_bytes:
-        print("ERROR, something went wrong")
+def Download_Annotations():
+    # Please add 'data' folder to file path before running code.
 
-    print("Extracting file...")
-    thetar = tarfile.open(target_path)
-    thetar.extractall()
-    thetar.close()
-    print("Done.")
+    annotation_file_test = "https://www.dropbox.com/sh/4ecwl7zdha60xqo/AAAfs3zbjpeYtzfOOeFzdPMta/sents_test_lc_nopunc.txt"
+    annotation_file_train = "https://www.dropbox.com/sh/4ecwl7zdha60xqo/AACLdedalP2OIPu5KG6cg5G7a/sents_train_lc_nopunc.txt"
+    annotation_file_val = "https://www.dropbox.com/sh/4ecwl7zdha60xqo/AAAU2dioWf_vRTW2Gqgnd4b5a/sents_val_lc_nopunc.txt"
+    target_path_test = "C:\\Users\\pc\\PycharmProjects\\video-captioning\\data\\sents_test_lc_nopunc.txt"
+    target_path_train = "C:\\Users\\pc\\PycharmProjects\\video-captioning\\data\\sents_train_lc_nopunc.txt"
+    target_path_val = "C:\\Users\\pc\\PycharmProjects\\video-captioning\\data\\sents_val_lc_nopunc.txt"
+    #download_annotations(annotation_file_test, annotation_file_train, annotation_file_val, target_path_test,
+    #                     target_path_train, target_path_val)
+
+
 
 def main():
-    thetarfile = "https://www.cs.utexas.edu/users/ml/clamp/videoDescription/YouTubeClips.tar"
-    target_path= "C:\\Users\\pc\\PycharmProjects\\video-captioning\\YouTubeClips.tar"
-    download_dataset(thetarfile,target_path)
+
+      Download_Dataset()
+      Download_Annotations()
 
 
 if __name__ == "__main__":
