@@ -17,10 +17,52 @@
             </Attribute>
           </value>
         </entry>
+        <entry key="C:\Users\pc\AppData\Local\Temp\Rar$DIa10344.26028\main.py">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="C:\Users\pc\AppData\Local\Temp\Rar$DIa16868.9407\main.py">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="D:\Bengu desktop\thesis\signlanguage.py">
+          <value>
+            <Attribute>
+              <option name="separator" value="&#9;" />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="D:\anaconda3\envs\s2vt\Lib\site-packages\torchvision\datasets\folder.py">
+          <value>
+            <Attribute>
+              <option name="separator" value=":" />
+            </Attribute>
+          </value>
+        </entry>
         <entry key="\ASL-sentences.csv">
           <value>
             <Attribute>
               <option name="separator" value="|" />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="\Feature_extraction.py">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="\Inception.py">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
             </Attribute>
           </value>
         </entry>
@@ -31,6 +73,27 @@
             </Attribute>
           </value>
         </entry>
+        <entry key="\denem.py">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="\deneme 2.py">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="\deneme.py">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
         <entry key="\download_dataset.py">
           <value>
             <Attribute>
@@ -38,10 +101,38 @@
             </Attribute>
           </value>
         </entry>
+        <entry key="\feature.py">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="\feature_extracting.py">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="\feeture_extraction.py">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
         <entry key="\main.py">
           <value>
             <Attribute>
               <option name="separator" value=":" />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="\utils.py">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
             </Attribute>
           </value>
         </entry>

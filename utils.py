@@ -65,7 +65,7 @@ def download_annotations(annotation_file_test, annotation_file_train, annotation
 
 def video_to_frame(file_paths,file_names):
 
-    path_to_save = 'C:\\Users\\pc\\PycharmProjects\\video-captioning\\Frames'
+    path_to_save = 'C:\\Users\\pc\\PycharmProjects\\video-captioning\\Frames\\train\\1'
     # get file path for desired video and where to save frames locally
     for i in range(len(file_paths)) and range(len(file_names)):
         cap = cv2.VideoCapture('%s' %(file_paths[i]))
