@@ -115,6 +115,20 @@
             </Attribute>
           </value>
         </entry>
+        <entry key="\feature_extraction.py">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="\feature_extraction_2.py">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
         <entry key="\feeture_extraction.py">
           <value>
             <Attribute>
