@@ -7,9 +7,7 @@ import os
 
 import torch
 import torch.nn as nn
-import torch.nn.functional as F
-from torch.jit.annotations import Optional
-from torch import Tensor
+
 
 import pretrainedmodels
 from pretrainedmodels import utils
