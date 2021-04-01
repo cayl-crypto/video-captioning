@@ -2,9 +2,8 @@ from __future__ import print_function, division
 
 import torch
 import torch.nn as nn
-import torch.optim as optim
-import torchvision
 from torchvision import datasets, transforms
+from Inception import inception_v3
 
 DATA_DIR = 'C:\\Users\\pc\\PycharmProjects\\video-captioning\\Frames\\train'
 LOG_DIR = 'logs'
@@ -29,7 +28,7 @@ train_loader = torch.utils.data.DataLoader(train_set, batch_size=4,
 classes = train_set.classes
 
 # inception v3
-model = torchvision.models.inception_v3(pretrained=True)
+model = inception_v3(pretrained=True)
 if FREEZE:
     for param in model.parameters():
         param.requires_grad = False
@@ -39,5 +38,3 @@ model.fc = nn.Linear(num_ftrs, 2)
 model = model.to(device)
 torch.save(model, 'features.pt')
 
-criterion = nn.CrossEntropyLoss()
-optimizer = optim.SGD(model.parameters(), lr=0.001, momentum=0.9)
