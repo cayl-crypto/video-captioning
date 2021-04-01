@@ -9,7 +9,7 @@ import json
 from PIL import Image
 import matplotlib.pyplot as plt
 import tarfile
-
+import os
 
 ######### Download Dataset and Annotations ###########
 
@@ -66,14 +66,13 @@ def download_annotations(annotation_file_test, annotation_file_train, annotation
 
 ####### Video to Frame #########
 
-def video_to_frame(file_paths, file_names):
-    path_to_save = 'C:\\Users\\pc\\PycharmProjects\\video-captioning\\Frames\\train\\1'
+def video_to_frame(file_paths, file_names,path_to_save):
+    os.makedirs(path_to_save)
     # get file path for desired video and where to save frames locally
-    for file_path, file_name in tqdm(zip(file_paths, file_names)):
-        raise NotImplementedError
 
-    for i in range(len(file_paths)) and range(len(file_names)):
-        cap = cv2.VideoCapture('%s' % (file_paths[i]))
+    for file_path, file_name in tqdm(zip(file_paths, file_names)):
+
+        cap = cv2.VideoCapture(file_path)
         # Videos framerate cap.get(propertyId)
         frameRate = cap.get(5)  # frame rate
         x = 1
@@ -88,24 +87,25 @@ def video_to_frame(file_paths, file_names):
 
             if frameId % math.floor(frameRate) == 0:
                 # Save frame as a jpg file
-                name = '%s_Frame_' % (file_names[i]) + str(int(x)) + '.jpg';
+                name = '%s_Frame_' % (file_name) + str(int(x)) + '.jpg';
                 x += 1
                 print('Creating: ' + name)
                 cv2.imwrite(os.path.join(path_to_save, name), frame)
 
         # release capture
         cap.release()
+
     print('Done.')
+raise NotImplementedError
 
 
-import os
 
 
-def get_filepaths(directory):
+def get_filepaths(video_path,path_to_save):
     file_paths = []  # List which will store all of the full filepaths.
     file_names = []  # List which will store all of the full filepaths.
     # Walk the tree.
-    for root, directories, files in os.walk(directory):
+    for root, directories, files in os.walk(video_path):
         for filename in files:
             # Join the two strings in order to form the full filepath.
             filepath = os.path.join(root, filename)
@@ -115,7 +115,7 @@ def get_filepaths(directory):
             file_names.append(file)  # Add it to the list.
     # print(file_paths)
     # print(file_names)
-    video_to_frame(file_paths, file_names)
+    video_to_frame(file_paths, file_names,path_to_save)
     return file_paths, file_names  # Self-explanatory.
 
 
