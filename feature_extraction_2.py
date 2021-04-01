@@ -20,16 +20,12 @@ from Inception import *
 import warnings
 
 
-
-
-def extract_features(frame_steps,model_name,video_path,output_dir,data_dir, model, load_image_fn):
-
+def extract_features(frame_steps, model_name, video_path, output_dir, data_dir, model, load_image_fn):
     model.eval()
 
     if not os.path.isdir(output_dir):
         os.mkdir(output_dir)
     print("save video feats to %s" % (output_dir))
-
 
     image_list = sorted(glob.glob(os.path.join(data_dir)))
     for image in tqdm(image_list):
@@ -52,8 +48,6 @@ def extract_features(frame_steps,model_name,video_path,output_dir,data_dir, mode
 
 
 if __name__ == '__main__':
-
-
     data_dir = 'C:\\Users\\pc\\PycharmProjects\\video-captioning\\Frames\\train\\1'
     output_dir = 'C:\\Users\\pc\\PycharmProjects\\video-captioning\\results'
 
@@ -64,7 +58,7 @@ if __name__ == '__main__':
     device = torch.device("cuda:0" if torch.cuda.is_available() else 'cpu')
 
     model = pretrainedmodels.inceptionv3(pretrained='imagenet')
-    #model = Inception.inception_v3(pretrained=False, progress=True)
+    # model = Inception.inception_v3(pretrained=False, progress=True)
     load_image_fn = utils.LoadTransformImage(model)
 
     model.last_linear = utils.Identity()
@@ -72,4 +66,4 @@ if __name__ == '__main__':
 
     model = model.cuda()
 
-    extract_features(frame_steps,model_name,data_dir,output_dir, model, load_image_fn)
+    extract_features(frame_steps, model_name, data_dir, output_dir, model, load_image_fn)
