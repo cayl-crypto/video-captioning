@@ -150,6 +150,13 @@
             </Attribute>
           </value>
         </entry>
+        <entry key="\sorted.py">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
         <entry key="\utils.py">
           <value>
             <Attribute>

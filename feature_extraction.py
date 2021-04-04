@@ -5,6 +5,7 @@ import torch.nn as nn
 from torchvision import datasets, transforms
 from Inception import inception_v3
 
+
 DATA_DIR = 'C:\\Users\\pc\\PycharmProjects\\video-captioning\\Frames\\train'
 LOG_DIR = 'logs'
 BATCH_SIZE = 6

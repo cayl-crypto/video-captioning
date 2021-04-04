@@ -10,7 +10,8 @@ from PIL import Image
 import matplotlib.pyplot as plt
 import tarfile
 import os
-
+import datetime
+import csv
 ######### Download Dataset and Annotations ###########
 
 def download_dataset(thetarfile, target_path):
@@ -44,14 +45,14 @@ def download_annotations(annotation_file_test, annotation_file_train, annotation
 
         # Define the remote file to retrieve
         remote_url = '%s' % (annotation[i])
-        # Define the local filename to save data
+        # Define the local filename to save annotations
         local_file = '%s' % (target[i])
-        # Make http request for remote file data
+        # Make http request for remote file annotations
         getdata = requests.get(remote_url)
         total_size_in_bytes = int(getdata.headers.get('content-length', 0))
         block_size = 1024  # 1 Kibibyte
         progress_bar = tqdm(total=total_size_in_bytes, unit='iB', unit_scale=True)
-        # Save file data to local copy
+        # Save file annotations to local copy
         with open(local_file, 'wb')as file:
             for data in getdata.iter_content(block_size):
                 progress_bar.update(len(data))
@@ -70,11 +71,32 @@ def video_to_frame(file_paths, file_names,path_to_save):
     os.makedirs(path_to_save)
     # get file path for desired video and where to save frames locally
 
+    file_paths.sort()
+    file_names.sort()
+    #video_time_path = open("video_times.txt", "w+")
+    """
+    with open('Frame_FPS.csv', mode='w') as new_file:
+        new_writer = csv.writer(new_file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
+        new_writer.writerow(['Video ID','Frames', 'FPS'])
+        """
     for file_path, file_name in tqdm(zip(file_paths, file_names)):
 
         cap = cv2.VideoCapture(file_path)
+        # count the number of frames
+        frames = cap.get(cv2.CAP_PROP_FRAME_COUNT)
+
+        fps = int(cap.get(cv2.CAP_PROP_FPS))
+        #new_writer.writerow((file_name,frames,fps))
+
+        #fpsnumber.write(frames+"     "+fps + "\n")
+        # calculate duration of the video
+        seconds = int(frames / fps)
+        video_time = str(datetime.timedelta(seconds=seconds))
+        #print("video time:", video_time)
+        #video_time_path.write(file_name +"  "+"--->"+"  "+ video_time+"\n")
         # Videos framerate cap.get(propertyId)
-        frameRate = cap.get(5)  # frame rate
+        #frameRate = cap.get(5)  # frame rate
+        frameRate=math.ceil(frames/8)
         x = 1
 
         while cap.isOpened():
@@ -95,8 +117,10 @@ def video_to_frame(file_paths, file_names,path_to_save):
         # release capture
         cap.release()
 
+    #video_time_path.close()
+
     print('Done.')
-raise NotImplementedError
+
 
 
 
@@ -116,6 +140,7 @@ def get_filepaths(video_path,path_to_save):
     # print(file_paths)
     # print(file_names)
     video_to_frame(file_paths, file_names,path_to_save)
+
     return file_paths, file_names  # Self-explanatory.
 
 

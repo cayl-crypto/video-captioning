@@ -46,7 +46,7 @@ def extract_features(frame_steps, model_name, video_path, output_dir, data_dir, 
 
 
 if __name__ == '__main__':
-    data_dir = 'C:\\Users\\pc\\PycharmProjects\\video-captioning\\Frames\\train\\1'
+    data_dir = 'C:\\Users\\pc\\PycharmProjects\\video-captioning\\Frames\\train'
     output_dir = 'C:\\Users\\pc\\PycharmProjects\\video-captioning\\results'
 
     model_name = 'inception_v3'

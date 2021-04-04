@@ -11,6 +11,7 @@ def Video_to_Frames():
     # Run the above function and store its results in a variable.
     video_path="C:\\Users\\pc\\PycharmProjects\\video-captioning\\YouTubeClips"
     path_to_save = "C:\\Users\\pc\\PycharmProjects\\video-captioning\\Frames\\train\\"
+
     get_filepaths(video_path,path_to_save)
 
 
