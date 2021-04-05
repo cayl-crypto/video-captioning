@@ -38,6 +38,20 @@
             </Attribute>
           </value>
         </entry>
+        <entry key="C:\Users\pc\AppData\Local\Temp\Rar$DIa20552.20914\get_vocab.py">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="C:\Users\pc\AppData\Local\Temp\Rar$DIa22392.29929\get_vocab.py">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
         <entry key="D:\Bengu desktop\thesis\signlanguage.py">
           <value>
             <Attribute>
@@ -77,6 +91,13 @@
           <value>
             <Attribute>
               <option name="separator" value="|" />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="\build_vocab.py">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
             </Attribute>
           </value>
         </entry>
@@ -147,6 +168,13 @@
           <value>
             <Attribute>
               <option name="separator" value=":" />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="\sentences.txt">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
             </Attribute>
           </value>
         </entry>

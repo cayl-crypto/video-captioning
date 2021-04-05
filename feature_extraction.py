@@ -7,31 +7,21 @@ import numpy as np
 from utils import *
 from glob import glob
 
-def get_filepath(image_path,video_path,batch_size=16):
-    file_paths = []  # List which will store all of the full filepaths.
+def get_filepath(video_path,batch_size=16):
     file_names = []  # List which will store all of the full filepaths.
-
-    # Walk the tree.
-    for root, directories, files in os.walk(image_path):
-        for filename in files:
-            # Join the two strings in order to form the full filepath.
-            filepath = os.path.join(root, filename)
-            file_paths.append(filepath)  # Add it to the list.
-
-    file_paths.sort()
 
     for root, directories, files in os.walk(video_path):
         for filename in files:
             file = os.path.basename(filename).split('.', 1)[0]
             file_names.append(file)  # Add it to the list.
     file_names.sort()
-    #print(file_paths)
+
     #print(file_names)
-    feature_extraction(file_paths,file_names,batch_size=batch_size)
-    return file_paths,file_names  # Self-explanatory.
+    feature_extraction(file_names,batch_size=batch_size)
+    return file_names  # Self-explanatory.
 
 # Iterate each image
-def feature_extraction(file_paths,file_names,batch_size=16):
+def feature_extraction(file_names,batch_size=16):
 
     # Will contain the feature
 
@@ -74,4 +64,4 @@ model = inception_v3(pretrained=True)
 
 model.to(device)
 model.eval()
-get_filepath(image_path,video_path,batch_size=batch_size)
+get_filepath(video_path,batch_size=batch_size)
