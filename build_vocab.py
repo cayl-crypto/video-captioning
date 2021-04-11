@@ -1,46 +1,90 @@
 
-
-import os
-import numpy as np
-from tokenizers import Tokenizer
 import csv
+from nltk.tokenize import word_tokenize
+import string
+from collections import Counter
+import unicodedata
+import re
+from tqdm import tqdm
+from create_vocabulary import *
+
+class Vocabulary:
+
+    def __init__(self):
+        self.train_list = []
+        self.vocab_list = []
+
+        self.word = Counter()
+
+    def caption_tokens(self,annotation,vidid,vocab_file):
+        # train_list contains all the captions with their video ID
+        # vocab_list contains all the vocabulary from training data
 
 
-def caption_tokens():
-    # train_list contains all the captions with their video ID
-    # vocab_list contains all the vocabulary from training data
-    train_list = []
-    vocab_list = []
-    for caption,vid_id in zip(y_data,vidid):
-        caption = "<bos> " + caption + " <eos>"
-        # we are only using sentences whose length lie between 6 and 10
-        if len(caption.split())>10 or len(caption.split())<6:
-          continue
-        else:
-          train_list.append([caption, vid_id])
-    print(len(train_list))
+        for caption,vid_id in zip(annotation,vidid):
+            caption = ' '.join(word.strip(string.punctuation).lower() for word in caption.split())
+            caption = "<bos> " + caption + " <eos>"
 
-    print(train_list)
-    for train in train_list:
-        vocab_list.append(train[0])
-    #print(vocab_list)
-    # Tokenizing the words
-    tokenizer = Tokenizer(num_words=9462)
-    tokenizer.fit_on_texts(vocab_list)
-    print(tokenizer)
+            self.train_list.append([caption, vid_id])
+
+        for i in annotation:
+
+            x=word_tokenize(i)
+            self.word += Counter(x)
+
+            for j in x:
+               self.vocab_list.append(j)
+
+        #print(self.word)
+        vocab_list=set(self.vocab_list)
+        vocab_list=sorted(vocab_list)
+        #print(vocab_list)
+
+        word=self.word
+        for key, f in sorted(word.items(), key=lambda x: x[1], reverse=True):
+            vocab_file.write(key + " " + str(f) + "\n")
+
+        with open('vocabulary.csv', 'a') as csvfile:
+           writer = csv.writer(csvfile, dialect='excel')
+
+           for k in vocab_list:
+                writer.writerow([k])
+
+
+def main():
+
     """
-    x_data = {}
-    TRAIN_FEATURE_DIR = os.path.join('training_data', 'feat')
-    # Loading all the numpy arrays at once and saving them in a dictionary
-    for filename in os.listdir(TRAIN_FEATURE_DIR):
-        f = np.load(os.path.join(TRAIN_FEATURE_DIR, filename))
-        x_data[filename[:-4]] = f
+    vidid=[]
+    annotation=[]
+    with open('annotationswithid.csv') as csvDataFile:
+        csvReader = csv.reader(csvDataFile)
+        for row in csvReader:
+            vidid.append(row[0])
+            annotation.append(row[1])
+
     """
 
-vid_id_path="vid_id.txt"
-fileName="sentences.txt"
-fileObj = open(fileName, "r") #opens the file in read mode
-y_data = fileObj.read().splitlines()
-vidfile = open(vid_id_path, "r") #opens the file in read mode
-vidid = vidfile.read().splitlines()
-caption_tokens()
+    fl = 'C:\\Users\\pc\\PycharmProjects\\video-captioning\\annotation with id\\sentences.txt'
+    fileObj = open(fl, "r") #opens the file in read mode
+    annotation= fileObj.read().splitlines()
+
+    fle = 'C:\\Users\\pc\\PycharmProjects\\video-captioning\\annotation with id\\id.txt'
+    fileObj = open(fle, "r") #opens the file in read mode
+    vidid= fileObj.read().splitlines()
+
+    vocab_file = open("vocab_file.txt", "w+")
+
+    vocab=Vocabulary()
+    vocab.caption_tokens(annotation,vidid,vocab_file)
+
+    annotation=normalizeAllCaptions(annotation)
+    vocab = Voc()
+    for caption in annotation:
+        vocab.addCaption(caption)
+
+    vocab.trim(20)
+
+    vocab.save_vocabulary()
+
+if __name__ == "__main__":
+    main()

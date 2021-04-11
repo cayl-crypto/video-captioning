@@ -10,8 +10,8 @@ SOC_token = 1  # Start-of-sentence token
 EOC_token = 2  # End-of-sentence token
 
 class Voc:
-    def __init__(self, name):
-        self.name = name
+    def __init__(self):
+
         self.trimmed = False
         self.word2index = {"pad": PAD_token, "soc": SOC_token, "eoc": EOC_token}
         self.word2count = {"pad": 0, "soc": 0, "eoc": 0}
@@ -32,7 +32,7 @@ class Voc:
             self.num_words += 1
         else:
             self.word2count[word] += 1
-
+        #print(self.word2count)
     # Remove words below a certain count threshold
     def trim(self, min_count):
         if self.trimmed:
@@ -59,9 +59,10 @@ class Voc:
             self.addWord(word)
 
     def save_vocabulary(self):
+        print('Downloading')
         save_json_file(self.word2index, "word2index.json")
         save_json_file(self.index2word, "index2word.json")
-        
+        print('Done')
 
     def load_vocabulary(self):
         self.word2index = load_json_file("word2index.json")
@@ -105,3 +106,22 @@ def normalizeAllCaptions(all_captions):
         normalized_captions.append(normalizeCaption(caption))
 
     return normalized_captions
+
+
+def main():
+    fl = 'C:\\Users\\pc\\PycharmProjects\\video-captioning\\annotation with id\\sentences.txt'
+    fileObj = open(fl, "r")  # opens the file in read mode
+    annotation = fileObj.read().splitlines()
+    annotation=normalizeAllCaptions(annotation)
+    vocab = Voc()
+    for caption in annotation:
+
+        vocab.addCaption(caption)
+        vocab.trim(20)
+
+    vocab.save_vocabulary()
+
+
+    print('Done')
+if __name__ == "__main__":
+    main()

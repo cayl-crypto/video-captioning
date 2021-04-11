@@ -87,6 +87,20 @@
             </Attribute>
           </value>
         </entry>
+        <entry key="\annotation with id\annotations_with_id.py">
+          <value>
+            <Attribute>
+              <option name="separator" value=":" />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="\annotation with id\create_json_annotation_id.py">
+          <value>
+            <Attribute>
+              <option name="separator" value=":" />
+            </Attribute>
+          </value>
+        </entry>
         <entry key="\asl 157 videos\ASL_sentences.csv">
           <value>
             <Attribute>
@@ -98,6 +112,13 @@
           <value>
             <Attribute>
               <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="\create_vocabulary.py">
+          <value>
+            <Attribute>
+              <option name="separator" value=":" />
             </Attribute>
           </value>
         </entry>
@@ -164,7 +185,21 @@
             </Attribute>
           </value>
         </entry>
+        <entry key="\iddd.py">
+          <value>
+            <Attribute>
+              <option name="separator" value=":" />
+            </Attribute>
+          </value>
+        </entry>
         <entry key="\main.py">
+          <value>
+            <Attribute>
+              <option name="separator" value=":" />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="\newww.py">
           <value>
             <Attribute>
               <option name="separator" value=":" />
@@ -193,6 +228,20 @@
           </value>
         </entry>
         <entry key="\video_to_frame.py">
+          <value>
+            <Attribute>
+              <option name="separator" value=":" />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="\videocap.py">
+          <value>
+            <Attribute>
+              <option name="separator" value=":" />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="\vocabulary.py">
           <value>
             <Attribute>
               <option name="separator" value=":" />
