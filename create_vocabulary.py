@@ -13,9 +13,9 @@ class Voc:
     def __init__(self):
 
         self.trimmed = False
-        self.word2index = {"pad": PAD_token, "soc": SOC_token, "eoc": EOC_token}
-        self.word2count = {"pad": 0, "soc": 0, "eoc": 0}
-        self.index2word = {PAD_token: "pad", SOC_token: "soc", EOC_token: "eoc"}
+        self.word2index = {"pad": PAD_token, "bos": SOC_token, "eos": EOC_token}
+        self.word2count = {"pad": 0, "bos": 0, "eos": 0}
+        self.index2word = {PAD_token: "pad", SOC_token: "bos", EOC_token: "eos"}
         self.num_words = 3  # Count SOC, EOC, PAD
 
     def addCaption(self, caption):
@@ -50,26 +50,43 @@ class Voc:
         ))
 
         # Reinitialize dictionaries
-        self.word2index = {"pad": PAD_token, "soc": SOC_token, "eoc": EOC_token}
-        self.word2count = {"pad": 0, "soc": 0, "eoc": 0}
-        self.index2word = {PAD_token: "pad", SOC_token: "soc", EOC_token: "eoc"}
+        self.word2index = {"pad": PAD_token, "bos": SOC_token, "eos": EOC_token}
+        self.word2count = {"pad": 0, "bos": 0, "eos": 0}
+        self.index2word = {PAD_token: "pad", SOC_token: "bos", EOC_token: "eos"}
         self.num_words = 3 # Count default tokens
 
         for word in keep_words:
             self.addWord(word)
 
-    def save_vocabulary(self):
+    def save_train_vocabulary(self):
         print('Downloading')
-        save_json_file(self.word2index, "word2index.json")
-        save_json_file(self.index2word, "index2word.json")
+        save_json_file(self.word2index, "train_word2index.json")
+        save_json_file(self.index2word, "train_index2word.json")
         print('Done')
 
-    def load_vocabulary(self):
-        self.word2index = load_json_file("word2index.json")
-        self.index2word = load_json_file("index2word.json")
+    def load_train_vocabulary(self):
+        self.word2index = load_json_file("train_word2index.json")
+        self.index2word = load_json_file("train_index2word.json")
         
+    def save_val_vocabulary(self):
+        print('Downloading')
+        save_json_file(self.word2index, "val_word2index.json")
+        save_json_file(self.index2word, "val_index2word.json")
+        print('Done')
 
+    def load_val_vocabulary(self):
+        self.word2index = load_json_file("val_word2index.json")
+        self.index2word = load_json_file("val_index2word.json")
 
+    def save_test_vocabulary(self):
+        print('Downloading')
+        save_json_file(self.word2index, "test_word2index.json")
+        save_json_file(self.index2word, "test_index2word.json")
+        print('Done')
+
+    def load_test_vocabulary(self):
+        self.word2index = load_json_file("test_word2index.json")
+        self.index2word = load_json_file("test_index2word.json")
 def save_json_file(dict, path):
     
 
@@ -102,26 +119,10 @@ def normalizeCaption(s):
 def normalizeAllCaptions(all_captions):
     normalized_captions = []
     print("Normalizing captions...")
-    for caption in tqdm(all_captions):   
+    for caption in tqdm(all_captions):
         normalized_captions.append(normalizeCaption(caption))
 
     return normalized_captions
 
 
-def main():
-    fl = 'C:\\Users\\pc\\PycharmProjects\\video-captioning\\annotation with id\\sentences.txt'
-    fileObj = open(fl, "r")  # opens the file in read mode
-    annotation = fileObj.read().splitlines()
-    annotation=normalizeAllCaptions(annotation)
-    vocab = Voc()
-    for caption in annotation:
 
-        vocab.addCaption(caption)
-        vocab.trim(20)
-
-    vocab.save_vocabulary()
-
-
-    print('Done')
-if __name__ == "__main__":
-    main()

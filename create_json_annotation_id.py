@@ -38,9 +38,9 @@ class Annotations:
 
     def dump_json(self, outfile):
 
-        #self.res["annotations"] = self.annotations
+        self.res["annotations"] = self.annotations
         res = self.annotations
-        print(res)
+        #print(res)
         with io.open(outfile, 'w') as fd:
             fd.write(unicode(json.dumps(res, ensure_ascii=True, sort_keys=True, indent=2, separators=(',', ': '))))
 
@@ -49,16 +49,16 @@ def main():
     dates = []
     scores = []
 
-    with open('C:\\Users\\pc\\PycharmProjects\\video-captioning\\annotations\\Kitap5.csv') as csvDataFile:
+    with open('/annotations/Kitap5.csv') as csvDataFile:
         csvReader = csv.reader(csvDataFile)
         for row in csvReader:
             dates.append(row[0])
             scores.append(row[1])
 
-    print(dates)
-    print(scores)
+    #print(dates)
+    #print(scores)
 
-    fileName = 'vid_id.txt'
+    fileName = 'annotation with id/vid_id.txt'
 
     fileObj = open(fileName, "r")  # opens the file in read mode
     id = fileObj.read().splitlines()
@@ -78,7 +78,7 @@ def main():
     sentence = fileObj.read().splitlines()
 
 
-    output_file="video_captioning.json"
+    output_file= "annotation with id/video_captioning.json"
 
 
     crf = Annotations()
