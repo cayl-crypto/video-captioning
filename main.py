@@ -9,12 +9,20 @@ import sys
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 def split_dataset(ids,captions):
+    """
     video_path="YouTubeClips"
+    video_time_path = open("video_id.txt", "w+")
     file_names = []  # List which will store all of the full filepaths.
     for root, directories, files in os.walk(video_path):
         for filename in files:
             file = os.path.basename(filename).split('.', 1)[0]
             file_names.append(file)  # Add it to the list.
+            video_time_path.write(file + "\n")
+    video_time_path.close()
+    """
+    fl = 'video_id.txt'
+    fileObj = open(fl, "r")  # opens the file in read mode
+    file_names = fileObj.read().splitlines()
 
     a=int(len(file_names)*0.70)
     b=int(len(file_names) * 0.20)
