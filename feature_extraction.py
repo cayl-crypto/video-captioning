@@ -47,8 +47,8 @@ def feature_extraction(file_names,batch_size=16):
         torch.save(features, f'features/{file_name}.pt')
 
 
-image_path = 'C:\\Users\\pc\\PycharmProjects\\video-captioning\\Frames\\train'
-video_path="C:\\Users\\pc\\PycharmProjects\\video-captioning\\YouTubeClips"
+image_path = 'Frames\\train'
+video_path="YouTubeClips"
 batch_size=64
 # Transform the image, so it becomes readable with the model
 preprocess = transforms.Compose([
