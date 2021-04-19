@@ -7,6 +7,12 @@ from tokenization import *
 import time
 import sys
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+torch.manual_seed(7)
+
+torch.cuda.manual_seed(7)
+torch.cuda.manual_seed_all(7)
+torch.backends.cudnn.deterministic = True
+torch.backends.cudnn.benchmark = False
 
 def split_dataset(ids,captions):
     """
@@ -241,7 +247,7 @@ def trainIters(encoder, decoder, n_iters, print_every=1000, plot_every=100, lear
     target_tensor = torch.zeros(batch_size, train_tokens.shape[1]).to(device)
     counter=0
     best_val_loss=None
-    STOP_POINT=10
+    STOP_POINT=200
     #generate_caption(encoder=encoder, decoder=decoder, video_frames=video_frames)
     for iters in tqdm(range(1, n_iters + 1)):
         encoder.train()
@@ -332,14 +338,11 @@ def showPlot(points):
 feature_size=2048
 hidden_size = 256
 num_layers = 1
-n_iters=20
+n_iters=200
 output_size=voc_size
 encoder1 = EncoderRNN(feature_size, hidden_size).to(device)
 decoder=DecoderRNN(hidden_size,output_size).to(device)
 trainIters(encoder1,decoder,n_iters)
-
-
-
 
 
 
