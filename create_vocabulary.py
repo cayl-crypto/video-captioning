@@ -58,35 +58,17 @@ class Voc:
         for word in keep_words:
             self.addWord(word)
 
-    def save_train_vocabulary(self):
+    def save_vocabulary(self):
         print('Downloading')
-        save_json_file(self.word2index, "train_word2index.json")
-        save_json_file(self.index2word, "train_index2word.json")
+        save_json_file(self.word2index, "word2index.json")
+        save_json_file(self.index2word, "index2word.json")
         print('Done')
 
-    def load_train_vocabulary(self):
-        self.word2index = load_json_file("train_word2index.json")
-        self.index2word = load_json_file("train_index2word.json")
+    def load_vocabulary(self):
+        self.word2index = load_json_file("word2index.json")
+        self.index2word = load_json_file("index2word.json")
         
-    def save_val_vocabulary(self):
-        print('Downloading')
-        save_json_file(self.word2index, "val_word2index.json")
-        save_json_file(self.index2word, "val_index2word.json")
-        print('Done')
 
-    def load_val_vocabulary(self):
-        self.word2index = load_json_file("val_word2index.json")
-        self.index2word = load_json_file("val_index2word.json")
-
-    def save_test_vocabulary(self):
-        print('Downloading')
-        save_json_file(self.word2index, "test_word2index.json")
-        save_json_file(self.index2word, "test_index2word.json")
-        print('Done')
-
-    def load_test_vocabulary(self):
-        self.word2index = load_json_file("test_word2index.json")
-        self.index2word = load_json_file("test_index2word.json")
 def save_json_file(dict, path):
     
 

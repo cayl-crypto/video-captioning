@@ -5,7 +5,13 @@ from models import *
 import torch
 from tokenization import *
 import time
+from torchtext.data.metrics import bleu_score
+from nltk.translate.bleu_score import sentence_bleu
+from nltk.translate.bleu_score import corpus_bleu
 import sys
+from livelossplot import PlotLosses
+import matplotlib.pyplot as plt
+
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 torch.manual_seed(7)
 
@@ -14,7 +20,7 @@ torch.cuda.manual_seed_all(7)
 torch.backends.cudnn.deterministic = True
 torch.backends.cudnn.benchmark = False
 
-def split_dataset(ids,captions):
+def split_dataset(id,padded_tokens):
     """
     video_path="YouTubeClips"
     video_time_path = open("video_id.txt", "w+")
@@ -39,16 +45,16 @@ def split_dataset(ids,captions):
     val_captions=[]
     val_id=[]
     for i,cap in enumerate(file_names):
-        for j,idd in enumerate(ids):
+        for j,idd in enumerate(id):
             if (idd == cap):
                 if i <= a:
-                    train_captions.append(captions[j])     #TRAIN
+                    train_captions.append(padded_tokens[j])     #TRAIN
                     train_id.append(idd)
                 elif i>a and i<=(a+b):
-                    test_captions.append(captions[j])      #TEST
+                    test_captions.append(padded_tokens[j])      #TEST
                     test_id.append(idd)
                 else:
-                    val_captions.append(captions[j])       #VALIDATION
+                    val_captions.append(padded_tokens[j])       #VALIDATION
                     val_id.append(idd)
 
             else:
@@ -58,64 +64,6 @@ def split_dataset(ids,captions):
     return train_captions,train_id,test_captions,test_id,val_captions,val_id
 
 
-def train_tokenize(train_captions,train_id):
-    voc = Voc()
-    for caption in train_captions:
-        voc.addCaption(caption)
-
-    voc.trim(20)
-
-    voc.save_train_vocabulary()
-    voc.load_train_vocabulary()
-    voc_size = len(voc.index2word)
-
-    tokenized_captions = tokenize(voc, train_captions)
-    # print(tokenized_captions)
-    id, caption_tokens = dataset_annotation(train_id, tokenized_captions)
-
-    padded_tokens = pad_sequences(caption_tokens)
-
-    return id, padded_tokens,voc_size
-
-
-def test_tokenize(test_captions,test_id):
-    voc = Voc()
-    for caption in test_captions:
-        voc.addCaption(caption)
-
-    voc.trim(20)
-
-    voc.save_test_vocabulary()
-    voc.load_test_vocabulary()
-    voc_size = len(voc.index2word)
-
-    tokenized_captions = tokenize(voc, test_captions)
-    # print(tokenized_captions)
-    id, caption_tokens = dataset_annotation(test_id, tokenized_captions)
-
-    padded_tokens = pad_sequences(caption_tokens)
-
-    return id, padded_tokens,voc_size
-
-
-def val_tokenize(val_captions,val_id):
-    voc = Voc()
-    for caption in val_captions:
-        voc.addCaption(caption)
-
-    voc.trim(20)
-
-    voc.save_val_vocabulary()
-    voc.load_val_vocabulary()
-    voc_size = len(voc.index2word)
-
-    tokenized_captions = tokenize(voc, val_captions)
-    # print(tokenized_captions)
-    id, caption_tokens = dataset_annotation(val_id, tokenized_captions)
-
-    padded_tokens = pad_sequences(caption_tokens)
-
-    return id, padded_tokens,voc_size
 
 
 
@@ -130,23 +78,41 @@ for annotation in tqdm(annotations):
     captions.append(caption)
     ids.append(id)
 
-train_captions,train_id,test_captions,test_id,val_captions,val_id=split_dataset(ids,captions)
-id, padded_tokens,voc_size=train_tokenize(train_captions,train_id)
+voc = Voc()
+for caption in captions:
+    voc.addCaption(caption)
+
+voc.trim(20)
+
+voc.save_vocabulary()
+voc.load_vocabulary()
+voc_size = len(voc.index2word)
+
+tokenized_captions = tokenize(voc, captions)
+# print(tokenized_captions)
+id, caption_tokens = dataset_annotation(ids, tokenized_captions)
+
+padded_tokens = pad_sequences(caption_tokens)
 
 
-train_tokens = torch.LongTensor(padded_tokens).to(device)
+train_captions,train_id,test_captions,test_id,val_captions,val_id=split_dataset(id,padded_tokens)
 
 
-vall_id, val_padded_tokens, val_voc_size = val_tokenize(val_captions, val_id)
-val_tokens = torch.LongTensor(val_padded_tokens).to(device)
+train_tokens = torch.LongTensor(train_captions).to(device)
+
+val_tokens = torch.LongTensor(val_captions).to(device)
+
+test_tokens = torch.LongTensor(test_captions).to(device)
+
+
 batch_size=64
 
-
+generated_caption= open("results/generated_captions.txt", "w+")
 def generate_caption(encoder,decoder, video_frames, max_len=20):
 
     voc = Voc()
 
-    voc.load_train_vocabulary()
+    voc.load_vocabulary()
     encoder_hidden = torch.zeros(1, 1, hidden_size).to(device)
     input_length = video_frames.size(1)
     with torch.no_grad():
@@ -169,7 +135,9 @@ def generate_caption(encoder,decoder, video_frames, max_len=20):
         caption += voc.index2word[str(int(decoder_output))] + " "
         input_token = decoder_output.unsqueeze(0)
 
-    print(caption)
+    #print(caption)
+    generated_caption.write(caption + "\n")
+    return caption
 
 def train(video_frames,target_tensor, encoder, decoder, encoder_optimizer, decoder_optimizer, criterion):
     #encoder_hidden = encoder.initHidden()
@@ -234,9 +202,13 @@ def val(video_frames,target_tensor, encoder, decoder,criterion):
 
     return loss.item() / sequence_length
 
+
+
+import csv
 def trainIters(encoder, decoder, n_iters, print_every=1000, plot_every=100, learning_rate=0.01):
     start = time.time()
     plot_losses = []
+    plot_val_losses=[]
     print_loss_total = 0  # Reset every print_every
     plot_loss_total = 0  # Reset every plot_every
     encoder_optimizer = optim.SGD(encoder.parameters(), lr=learning_rate)
@@ -248,77 +220,95 @@ def trainIters(encoder, decoder, n_iters, print_every=1000, plot_every=100, lear
     counter=0
     best_val_loss=None
     STOP_POINT=200
+    with open('results/train_val_loss.csv', mode='w') as new_file:
+        new_writer = csv.writer(new_file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
+        new_writer.writerow(['epoch', 'train loss', 'validation loss'])
     #generate_caption(encoder=encoder, decoder=decoder, video_frames=video_frames)
-    for iters in tqdm(range(1, n_iters + 1)):
-        encoder.train()
-        decoder.train()
-        for n, index in enumerate(id):
-            batch_index = n % batch_size
-            video_frames[batch_index] = torch.load('features/' + index + '.pt')  # encoder input
-            target_tensor[batch_index] = train_tokens[n]
-            if batch_index == batch_size - 1:
-                loss = train(video_frames, target_tensor, encoder,
-                             decoder, encoder_optimizer, decoder_optimizer, criterion)
-                print_loss_total += loss
-                plot_loss_total += loss
+        for iters in tqdm(range(1, n_iters + 1)):
+            encoder.train()
+            decoder.train()
+            for n, index in enumerate(train_id):
+                batch_index = n % batch_size
+                video_frames[batch_index] = torch.load('features/' + index + '.pt')  # encoder input
+                target_tensor[batch_index] = train_tokens[n]
+                if batch_index == batch_size - 1:
+                    loss = train(video_frames, target_tensor, encoder,
+                                 decoder, encoder_optimizer, decoder_optimizer, criterion)
+                    print_loss_total += loss
+                    plot_loss_total += loss
 
-            if n == len(id) - 1:
-                loss = train(video_frames[:batch_index+1], target_tensor[:batch_index+1], encoder,
-                             decoder, encoder_optimizer, decoder_optimizer, criterion)
-                print_loss_total += loss
-                plot_loss_total += loss
-
-
-        #if iter % print_every == 0:
-        print_loss_avg = print_loss_total / print_every
-        print_loss_total = 0
-        print(f"train loss: {print_loss_avg}")
-        print()
-
-        print_val_loss_total = 0  # Reset every print_every
-        plot_val_loss_total = 0
-        encoder.eval()
-        decoder.eval()
-
-        for n, index in enumerate(vall_id):
-            batch_index = n % batch_size
-            video_frames[batch_index] = torch.load('features/' + index + '.pt')  # encoder input
-            target_tensor[batch_index] = val_tokens[n]
-
-            if batch_index == batch_size - 1:
+                if n == len(train_id) - 1:
+                    loss = train(video_frames[:batch_index+1], target_tensor[:batch_index+1], encoder,
+                                 decoder, encoder_optimizer, decoder_optimizer, criterion)
+                    print_loss_total += loss
+                    plot_loss_total += loss
 
 
-                val_loss =val(video_frames,target_tensor, encoder, decoder,criterion)
+            #if iter % print_every == 0:
+            print_loss_avg = print_loss_total / print_every
+            plot_losses.append(print_loss_avg)
+            print_loss_total = 0
+            print(f"train loss: {print_loss_avg}")
+            print()
 
-                print_val_loss_total += val_loss
-                plot_val_loss_total += val_loss
+            print_val_loss_total = 0  # Reset every print_every
+            plot_val_loss_total = 0
+            encoder.eval()
+            decoder.eval()
 
-            if n == len(vall_id) - 1:
+            for n, index in enumerate(val_id):
+                batch_index = n % batch_size
+                video_frames[batch_index] = torch.load('features/' + index + '.pt')  # encoder input
+                target_tensor[batch_index] = val_tokens[n]
 
-                val_loss = val(video_frames[:batch_index+1],target_tensor[:batch_index+1], encoder, decoder,criterion)
-                print_val_loss_total += val_loss
-                plot_val_loss_total += val_loss
+                if batch_index == batch_size - 1:
 
-        print_val_loss_avg = print_val_loss_total / print_every
-        print_val_loss_total = 0
-        print(f"validation loss: {print_val_loss_avg}")
-        print()
-        if best_val_loss==None:
-            best_val_loss=print_val_loss_avg
-            torch.save(encoder, 'best_encoder.pth')
-            torch.save(decoder, 'best_decoder.pth')
-        elif print_val_loss_avg< best_val_loss:
-            counter=0
-            best_val_loss=print_val_loss_avg
-            torch.save(encoder, 'best_encoder.pth')
-            torch.save(decoder, 'best_decoder.pth')
-        else:
-            counter+=1
-            if counter>=STOP_POINT:
-                break
-        generate_caption(encoder=encoder,decoder=decoder, video_frames=video_frames)
 
-import matplotlib.pyplot as plt
+                    val_loss =val(video_frames,target_tensor, encoder, decoder,criterion)
+
+                    print_val_loss_total += val_loss
+                    plot_val_loss_total += val_loss
+
+                if n == len(val_id) - 1:
+
+                    val_loss = val(video_frames[:batch_index+1],target_tensor[:batch_index+1], encoder, decoder,criterion)
+                    print_val_loss_total += val_loss
+                    plot_val_loss_total += val_loss
+
+            print_val_loss_avg = print_val_loss_total / print_every
+            print_val_loss_total = 0
+            plot_val_losses.append(print_val_loss_avg)
+            print(f"validation loss: {print_val_loss_avg}")
+            print()
+            #torch.save(encoder, 'model/%s_epoch_encoder.pth'% (iters))
+            #torch.save(decoder, 'model/%s_epoch_decoder.pth'% (iters))
+            new_writer.writerow(('%s'% (iters), print_loss_avg , print_val_loss_avg))
+            """  
+            if best_val_loss==None:
+                best_val_loss=print_val_loss_avg
+                torch.save(encoder, 'best_encoder.pth')
+                torch.save(decoder, 'best_decoder.pth')
+            elif print_val_loss_avg< best_val_loss:
+                counter=0
+                best_val_loss=print_val_loss_avg
+                torch.save(encoder, 'best_encoder.pth')
+                torch.save(decoder, 'best_decoder.pth')
+            else:
+                counter+=1
+                if counter>=STOP_POINT:
+                    break
+            """
+            generate_caption(encoder=encoder,decoder=decoder, video_frames=video_frames)
+    plt.plot(plot_losses)
+    plt.plot(plot_val_losses)
+    plt.title('model loss')
+    plt.ylabel('loss')
+    plt.xlabel('epoch')
+    plt.legend(['train', 'validation'], loc='upper left')
+    plt.show()
+    plt.savefig('results/model_loss.png')
+    generated_caption.close()
+
 plt.switch_backend('agg')
 import matplotlib.ticker as ticker
 import numpy as np
@@ -330,6 +320,7 @@ def showPlot(points):
     # this locator puts ticks at regular intervals
     loc = ticker.MultipleLocator(base=0.2)
     ax.yaxis.set_major_locator(loc)
+
     plt.plot(points)
 
 
@@ -340,10 +331,9 @@ hidden_size = 256
 num_layers = 1
 n_iters=200
 output_size=voc_size
-encoder1 = EncoderRNN(feature_size, hidden_size).to(device)
+encoder = EncoderRNN(feature_size, hidden_size).to(device)
 decoder=DecoderRNN(hidden_size,output_size).to(device)
-trainIters(encoder1,decoder,n_iters)
-
+trainIters(encoder,decoder,n_iters)
 
 
 

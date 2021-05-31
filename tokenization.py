@@ -5,8 +5,8 @@ from collections import Counter
 
 def tokenize(vocabulary, captions):
     
-    print()
-    print("Tokenizing captions...")
+    #print()
+    #print("Tokenizing captions...")
     tokenized_captions = []
     for caption in tqdm(captions):
         caption_tokens = []
@@ -30,8 +30,8 @@ def get_maximum_length_of_captions(tokenized_captions):
 
     #print(caption_len)
     a = dict(Counter(sorted(caption_len)))
-    print(a)
-    print(max_len)
+    #print(a)
+    #print(max_len)
 
     return max_len
 
@@ -41,14 +41,14 @@ def pad_sequences(sequences):
 
     padded_tokens = []
 
-    print("Padding tokens...")
+    #print("Padding tokens...")
     for sequence in tqdm(sequences):
         
         for i in range(max_len - len(sequence) + 1):
             sequence.append(0)
         padded_tokens.append(sequence)
 
-    print("Padded.")
+    #print("Padded.")
     return padded_tokens
 
 def dataset_annotation(ids, tokenized_captions):
@@ -62,9 +62,9 @@ def dataset_annotation(ids, tokenized_captions):
             id.append(img_path)
             caption_tokens.append(caption)
 
-    print("LEN of core im path")
-    print(len(id))
-    print(len(caption_tokens))
+    #print("LEN of core im path")
+    #print(len(id))
+    #print(len(caption_tokens))
     return id, caption_tokens
 
 def dataset_validation(ids, tokenized_captions):
@@ -78,9 +78,9 @@ def dataset_validation(ids, tokenized_captions):
             id.append(img_path)
             caption_tokens.append(caption)
 
-    print("LEN of core im path")
-    print(len(id))
-    print(len(caption_tokens))
+    #print("LEN of core im path")
+    #print(len(id))
+    #print(len(caption_tokens))
     return id, caption_tokens
 
 def load_json_file(path):
