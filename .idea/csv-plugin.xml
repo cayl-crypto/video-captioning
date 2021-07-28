@@ -227,6 +227,20 @@
             </Attribute>
           </value>
         </entry>
+        <entry key="\nasnet.py">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="\nasnet_feature_extraction.py">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
         <entry key="\newww.py">
           <value>
             <Attribute>

@@ -4,7 +4,7 @@ from tokenization import *
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 from utils import *
-"""
+""""
 ## ADD 'Frames' folder to file path before running code.
 
 def Video_to_Frames():
@@ -146,8 +146,8 @@ def samplevid(id):
     video_frames = torch.zeros(1, 8, 2048).to(device)
     # target_tensor = torch.zeros(batch_size, train_tokens.shape[1]).to(device)
     for iters in tqdm(range(1, n_iters + 1)):
-        encoder = torch.load('model/%s_epoch_encoder.pth' % (iters))
-        decoder = torch.load('model/%s_epoch_decoder.pth' % (iters))
+        encoder = torch.load('model_incep_3_layer/%s_epoch_encoder.pth' % (iters))
+        decoder = torch.load('model_incep_3_layer/%s_epoch_decoder.pth' % (iters))
         encoder.train()
         decoder.train()
         trgs = []
@@ -159,7 +159,7 @@ def samplevid(id):
     video_frames[0] = torch.load('sample_features/' + id + '.pt')
     generate_caption(encoder=encoder, decoder=decoder, video_frames=video_frames)
 
-n_iters=200
+n_iters=15
 
 
 

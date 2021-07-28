@@ -107,13 +107,13 @@ test_tokens = torch.LongTensor(test_captions).to(device)
 
 batch_size=64
 
-generated_caption= open("results/generated_captions.txt", "w+")
+#generated_caption= open("results/generated_captions.txt", "w+")
 def generate_caption(encoder,decoder, video_frames, max_len=20):
 
     voc = Voc()
 
     voc.load_vocabulary()
-    encoder_hidden = torch.zeros(1, 1, hidden_size).to(device)
+    encoder_hidden = torch.zeros(6, 1, hidden_size).to(device)
     input_length = video_frames.size(1)
     with torch.no_grad():
         for ei in range(input_length):
@@ -135,13 +135,13 @@ def generate_caption(encoder,decoder, video_frames, max_len=20):
         caption += voc.index2word[str(int(decoder_output))] + " "
         input_token = decoder_output.unsqueeze(0)
 
-    #print(caption)
-    generated_caption.write(caption + "\n")
+    print(caption)
+    #generated_caption.write(caption + "\n")
     return caption
 
 def train(video_frames,target_tensor, encoder, decoder, encoder_optimizer, decoder_optimizer, criterion):
     #encoder_hidden = encoder.initHidden()
-    encoder_hidden=torch.zeros(1,video_frames.size(0),hidden_size).to(device)
+    encoder_hidden=torch.zeros(6,video_frames.size(0),hidden_size).to(device)
     encoder_optimizer.zero_grad()
     decoder_optimizer.zero_grad()
 
@@ -174,7 +174,7 @@ def train(video_frames,target_tensor, encoder, decoder, encoder_optimizer, decod
     return loss.item() / sequence_length
 
 def val(video_frames,target_tensor, encoder, decoder,criterion):
-    encoder_hidden = torch.zeros(1, video_frames.size(0), hidden_size).to(device)
+    encoder_hidden = torch.zeros(6, video_frames.size(0), hidden_size).to(device)
 
     input_length = video_frames.size(1)
     # target_length = caption.size(0)
@@ -215,12 +215,12 @@ def trainIters(encoder, decoder, n_iters, print_every=1000, plot_every=100, lear
     decoder_optimizer = optim.SGD(decoder.parameters(), lr=learning_rate)
     criterion = nn.NLLLoss()
 
-    video_frames = torch.zeros(batch_size, 8, 2048).to(device)
+    video_frames = torch.zeros(batch_size, 8, 4032).to(device)
     target_tensor = torch.zeros(batch_size, train_tokens.shape[1]).to(device)
     counter=0
     best_val_loss=None
     STOP_POINT=200
-    with open('results/train_val_loss.csv', mode='w') as new_file:
+    with open('results/gru_train_val_loss.csv', mode='w') as new_file:
         new_writer = csv.writer(new_file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
         new_writer.writerow(['epoch', 'train loss', 'validation loss'])
     #generate_caption(encoder=encoder, decoder=decoder, video_frames=video_frames)
@@ -229,7 +229,7 @@ def trainIters(encoder, decoder, n_iters, print_every=1000, plot_every=100, lear
             decoder.train()
             for n, index in enumerate(train_id):
                 batch_index = n % batch_size
-                video_frames[batch_index] = torch.load('features/' + index + '.pt')  # encoder input
+                video_frames[batch_index] = torch.load('nasnet_feature_new/' + index + '.pt')  # encoder input
                 target_tensor[batch_index] = train_tokens[n]
                 if batch_index == batch_size - 1:
                     loss = train(video_frames, target_tensor, encoder,
@@ -258,7 +258,7 @@ def trainIters(encoder, decoder, n_iters, print_every=1000, plot_every=100, lear
 
             for n, index in enumerate(val_id):
                 batch_index = n % batch_size
-                video_frames[batch_index] = torch.load('features/' + index + '.pt')  # encoder input
+                video_frames[batch_index] = torch.load('nasnet_feature_new/' + index + '.pt')  # encoder input
                 target_tensor[batch_index] = val_tokens[n]
 
                 if batch_index == batch_size - 1:
@@ -280,8 +280,8 @@ def trainIters(encoder, decoder, n_iters, print_every=1000, plot_every=100, lear
             plot_val_losses.append(print_val_loss_avg)
             print(f"validation loss: {print_val_loss_avg}")
             print()
-            #torch.save(encoder, 'model/%s_epoch_encoder.pth'% (iters))
-            #torch.save(decoder, 'model/%s_epoch_decoder.pth'% (iters))
+            torch.save(encoder, 'model_nasnet_6_layer/%s_epoch_encoder.pth'% (iters))
+            torch.save(decoder, 'model_nasnet_6_layer/%s_epoch_decoder.pth'% (iters))
             new_writer.writerow(('%s'% (iters), print_loss_avg , print_val_loss_avg))
             """  
             if best_val_loss==None:
@@ -306,8 +306,8 @@ def trainIters(encoder, decoder, n_iters, print_every=1000, plot_every=100, lear
     plt.xlabel('epoch')
     plt.legend(['train', 'validation'], loc='upper left')
     plt.show()
-    plt.savefig('results/model_loss.png')
-    generated_caption.close()
+    plt.savefig('results/grumodel_loss.png')
+    #generated_caption.close()
 
 plt.switch_backend('agg')
 import matplotlib.ticker as ticker
@@ -326,13 +326,14 @@ def showPlot(points):
 
 
 
-feature_size=2048
+feature_size=4032
 hidden_size = 256
-num_layers = 1
-n_iters=200
+encoder_n_layers = 6
+decoder_n_layers =6
+n_iters=50
 output_size=voc_size
-encoder = EncoderRNN(feature_size, hidden_size).to(device)
-decoder=DecoderRNN(hidden_size,output_size).to(device)
+encoder = EncoderRNN(feature_size, hidden_size, encoder_n_layers).to(device)
+decoder=DecoderRNN(hidden_size,output_size,decoder_n_layers).to(device)
 trainIters(encoder,decoder,n_iters)
 
 

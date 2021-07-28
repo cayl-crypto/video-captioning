@@ -111,13 +111,13 @@ for z in test_captions:
 #print(referance_caption)
 batch_size=64
 hidden_size = 256
-generated_caption= open("predict/prediction_30.txt", "w+")
-def generate_caption(encoder,decoder, video_frames, max_len=20):
+
+
+def generate_caption(encoder,decoder, video_frames,prediction, max_len=20):
 
     voc = Voc()
-
     voc.load_vocabulary()
-    encoder_hidden = torch.zeros(1, 1, hidden_size).to(device)
+    encoder_hidden = torch.zeros(6, 1, hidden_size).to(device)
     input_length = video_frames.size(1)
     with torch.no_grad():
         #for i in range(batch_size-1):
@@ -158,14 +158,14 @@ def generate_caption(encoder,decoder, video_frames, max_len=20):
             string = ' '.join(generated_captions[:])
             #print(f'predicted caption: {string}')
             #print(generated_captions)
-    generated_caption.write(string + "\n")
+    prediction.write(string + "\n")
     #generated_caption.write(caption + "\n")
     return generated_captions
 def test():
     print_test_loss_total = 0  # Reset every print_every
     plot_test_loss_total = 0  # Reset every plot_every
     criterion = nn.NLLLoss()
-    video_frames = torch.zeros(1, 8, 2048).to(device)
+    video_frames = torch.zeros(1, 8, 4032).to(device)
     #target_tensor = torch.zeros(batch_size, train_tokens.shape[1]).to(device)
     trgs = []
     pred_trgs = []
@@ -176,12 +176,15 @@ def test():
     print_bleu_4_total = 0
     #for iters in tqdm(range(1, n_iters + 1)):
     import csv
-    #with open('results/epoch_blue_scores.csv', mode='w') as new_file:
+    #with open('results/nasnet_epoch_blue_scores.csv', mode='w') as new_file:
     #    new_writer = csv.writer(new_file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
     #    new_writer.writerow(['Iteration', 'BLEU-1', 'BLEU-2','BLEU-3','BLEU-4'])
     for iters in tqdm(range(1, n_iters + 1)):
-        encoder = torch.load('model/%s_epoch_encoder.pth' % (iters))
-        decoder = torch.load('model/%s_epoch_decoder.pth' % (iters))
+        encoder = torch.load('model_nasnet_6_layer/%s_epoch_encoder.pth' % (iters))
+        decoder = torch.load('model_nasnet_6_layer/%s_epoch_decoder.pth' % (iters))
+        prediction = open("predict_nasnet_6_layer/prediction_%s.txt"% (iters), "w+")
+        #encoder = torch.load('model_incep_3_layer/15_epoch_encoder.pth')
+        #decoder = torch.load('model_incep_3_layer/15_epoch_decoder.pth')
     #encoder = torch.load('best_encoder.pth' )
     #decoder = torch.load('best_decoder.pth' )
 
@@ -191,87 +194,87 @@ def test():
         encoder.eval()
         decoder.eval()
         #import csv
-        #with open('results/new_blue_scores.csv', mode='w') as new_file:
-        #    new_writer = csv.writer(new_file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
-        #    new_writer.writerow(['Iteration', 'BLEU-1', 'BLEU-2','BLEU-3','BLEU-4'])
+    #    with open('results/nasnet_blue_scores.csv', mode='w') as new_file:
+    #        new_writer = csv.writer(new_file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
+    #        new_writer.writerow(['Iteration', 'BLEU-1', 'BLEU-2','BLEU-3','BLEU-4'])
         count=0
 
-    for n, index in enumerate(test_id):
+        for n, index in enumerate(test_id):
 
-        if n==0:
-            reference.append(referance_caption[n])
-        elif index == test_id[n-1]:
-            reference.append(referance_caption[n])
-        else:
-            reference=[]
-            reference.append(referance_caption[n])
+            if n==0:
+                reference.append(referance_caption[n])
+            elif index == test_id[n-1]:
+                reference.append(referance_caption[n])
+            else:
+                reference=[]
+                reference.append(referance_caption[n])
 
-        if n==len(test_id)-1:
-            #print(index)
-            #print(reference)
-            video_frames[0] = torch.load('features/' + index + '.pt')  # encoder input
-            pred_test = generate_caption(encoder=encoder, decoder=decoder, video_frames=video_frames)
-            count += 1
-            weights = (1, 0, 0, 0)
-            bleu_1 = sentence_bleu(reference, pred_test, weights)
-            weights = (0.5, 0.5, 0, 0)
-            bleu_2 = sentence_bleu(reference, pred_test, weights)
-            weights = (0.3, 0.3, 0.3, 0)
-            bleu_3 = sentence_bleu(reference, pred_test, weights)
-            weights = (0.25, 0.25, 0.25, 0.25)
-            bleu_4 = sentence_bleu(reference, pred_test, weights)
-            #print(f"iteration:{count}")
-            #print(f"BLEU-1: {bleu_1}")
-            #print(f"BLEU-2: {bleu_2}")
-            #print(f"BLEU-3: {bleu_3}")
-            #print(f"BLEU-4: {bleu_4}")
-            print_bleu_1_total += bleu_1
-            print_bleu_2_total += bleu_2
-            print_bleu_3_total += bleu_3
-            print_bleu_4_total += bleu_4
-            print_bleu_1_avg = print_bleu_1_total / count
-            print_bleu_2_avg = print_bleu_2_total / count
-            print_bleu_3_avg = print_bleu_3_total / count
-            print_bleu_4_avg = print_bleu_4_total / count
-            #print(f"iteration:{count}")
-            print(f"BLEU-1: {print_bleu_1_avg}")
-            print(f"BLEU-2: {print_bleu_2_avg}")
-            print(f"BLEU-3: {print_bleu_3_avg}")
-            print(f"BLEU-4: {print_bleu_4_avg}")
-            print_bleu_1_total=0
-            print_bleu_2_total = 0
-            print_bleu_3_total = 0
-            print_bleu_4_total = 0
-            #new_writer.writerow((iters, print_bleu_1_avg, print_bleu_2_avg, print_bleu_3_avg, print_bleu_4_avg))
-        elif index != test_id[n+1]:
-            #print(index)
-            #print(reference)
-            video_frames[0] = torch.load('features/' + index + '.pt')  # encoder input
-            pred_test = generate_caption(encoder=encoder, decoder=decoder, video_frames=video_frames)
-            count += 1
-            weights = (1, 0, 0, 0)
-            bleu_1 = sentence_bleu(reference, pred_test, weights)
-            weights = (0.5, 0.5, 0, 0)
-            bleu_2 = sentence_bleu(reference, pred_test, weights)
-            weights = (0.3, 0.3, 0.3, 0)
-            bleu_3 = sentence_bleu(reference, pred_test, weights)
-            weights = (0.25, 0.25, 0.25, 0.25)
-            bleu_4 = sentence_bleu(reference, pred_test, weights)
-            #print(f"iteration:{count}")
-            #print(f"BLEU-1: {bleu_1}")
-            #print(f"BLEU-2: {bleu_2}")
-            #print(f"BLEU-3: {bleu_3}")
-            #print(f"BLEU-4: {bleu_4}")
-            #new_writer.writerow((count, bleu_1, bleu_2, bleu_3, bleu_4))
-            print_bleu_1_total += bleu_1
-            print_bleu_2_total += bleu_2
-            print_bleu_3_total += bleu_3
-            print_bleu_4_total += bleu_4
+            if n==len(test_id)-1:
+                #print(index)
+                #print(reference)
+                video_frames[0] = torch.load('nasnet_feature_new/' + index + '.pt')  # encoder input
+                pred_test = generate_caption(encoder=encoder, decoder=decoder, video_frames=video_frames,prediction=prediction)
+                count += 1
+                weights = (1, 0, 0, 0)
+                bleu_1 = sentence_bleu(reference, pred_test, weights)
+                weights = (0.5, 0.5, 0, 0)
+                bleu_2 = sentence_bleu(reference, pred_test, weights)
+                weights = (0.3, 0.3, 0.3, 0)
+                bleu_3 = sentence_bleu(reference, pred_test, weights)
+                weights = (0.25, 0.25, 0.25, 0.25)
+                bleu_4 = sentence_bleu(reference, pred_test, weights)
+                #print(f"iteration:{count}")
+                #print(f"BLEU-1: {bleu_1}")
+                #print(f"BLEU-2: {bleu_2}")
+                #print(f"BLEU-3: {bleu_3}")
+                #print(f"BLEU-4: {bleu_4}")
+                print_bleu_1_total += bleu_1
+                print_bleu_2_total += bleu_2
+                print_bleu_3_total += bleu_3
+                print_bleu_4_total += bleu_4
+                print_bleu_1_avg = print_bleu_1_total / count
+                print_bleu_2_avg = print_bleu_2_total / count
+                print_bleu_3_avg = print_bleu_3_total / count
+                print_bleu_4_avg = print_bleu_4_total / count
+                #print(f"iteration:{count}")
+                print(f"BLEU-1: {print_bleu_1_avg}")
+                print(f"BLEU-2: {print_bleu_2_avg}")
+                print(f"BLEU-3: {print_bleu_3_avg}")
+                print(f"BLEU-4: {print_bleu_4_avg}")
+                print_bleu_1_total=0
+                print_bleu_2_total = 0
+                print_bleu_3_total = 0
+                print_bleu_4_total = 0
+                #new_writer.writerow((iters, print_bleu_1_avg, print_bleu_2_avg, print_bleu_3_avg, print_bleu_4_avg))
+            elif index != test_id[n+1]:
+                #print(index)
+                #print(reference)
+                video_frames[0] = torch.load('nasnet_feature_new/' + index + '.pt')  # encoder input
+                pred_test = generate_caption(encoder=encoder, decoder=decoder, video_frames=video_frames,prediction=prediction)
+                count += 1
+                weights = (1, 0, 0, 0)
+                bleu_1 = sentence_bleu(reference, pred_test, weights)
+                weights = (0.5, 0.5, 0, 0)
+                bleu_2 = sentence_bleu(reference, pred_test, weights)
+                weights = (0.3, 0.3, 0.3, 0)
+                bleu_3 = sentence_bleu(reference, pred_test, weights)
+                weights = (0.25, 0.25, 0.25, 0.25)
+                bleu_4 = sentence_bleu(reference, pred_test, weights)
+                #print(f"iteration:{count}")
+                #print(f"BLEU-1: {bleu_1}")
+                #print(f"BLEU-2: {bleu_2}")
+                #print(f"BLEU-3: {bleu_3}")
+                #print(f"BLEU-4: {bleu_4}")
+                #new_writer.writerow((count, bleu_1, bleu_2, bleu_3, bleu_4))
+                print_bleu_1_total += bleu_1
+                print_bleu_2_total += bleu_2
+                print_bleu_3_total += bleu_3
+                print_bleu_4_total += bleu_4
 
 
 
-        else:
-            continue
+            else:
+                continue
 
 
 
@@ -280,8 +283,8 @@ def samplevid(id):
     video_frames = torch.zeros(1, 8, 2048).to(device)
     # target_tensor = torch.zeros(batch_size, train_tokens.shape[1]).to(device)
     for iters in tqdm(range(1, n_iters + 1)):
-        encoder = torch.load('model/%s_epoch_encoder.pth' % (iters))
-        decoder = torch.load('model/%s_epoch_decoder.pth' % (iters))
+        encoder = torch.load('model_incep_3_layer/%s_epoch_encoder.pth' % (iters))
+        decoder = torch.load('model_incep_3_layer/%s_epoch_decoder.pth' % (iters))
         encoder.train()
         decoder.train()
         trgs = []
@@ -294,7 +297,7 @@ def samplevid(id):
     generate_caption(encoder=encoder, decoder=decoder, video_frames=video_frames)
 
 
-n_iters=30
+n_iters=50
 """
 for iters in tqdm(range(1, n_iters + 1)):
     encoder=torch.load('model/%s_epoch_encoder.pth'% (iters))

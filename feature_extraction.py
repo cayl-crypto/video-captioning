@@ -1,6 +1,8 @@
 
 import torch
 from torchvision import datasets, transforms
+from keras.applications.nasnet import NASNetLarge
+from keras.models import Model
 from Inception import inception_v3
 from tqdm import tqdm
 import numpy as np
@@ -44,7 +46,7 @@ def feature_extraction(file_names,batch_size=16):
           features[j]=feature
 
 
-        torch.save(features, f'features/{file_name}.pt')
+        #torch.save(features, f'features/{file_name}.pt')
 
 
 image_path = 'Frames\\train'
@@ -61,6 +63,7 @@ preprocess = transforms.Compose([
 device = torch.device('cuda:0' if torch.cuda.is_available() else "cpu")
 
 model = inception_v3(pretrained=True)
+
 
 model.to(device)
 model.eval()
